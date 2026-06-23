@@ -15,7 +15,7 @@ type AppointmentBookingProps = {
   token: string;
   doctors: AppointmentDoctor[];
   appointments: PatientAppointment[];
-  preferredDoctorIds: number[];
+  preferredDoctorIds: string[];
   onBooked: () => void;
 };
 
@@ -68,7 +68,7 @@ function canCancelAppointment(appointment: PatientAppointment) {
 
 export function AppointmentBooking({ token, doctors, appointments, preferredDoctorIds, onBooked }: AppointmentBookingProps) {
   const [isCreating, setIsCreating] = useState(false);
-  const [selectedDoctorId, setSelectedDoctorId] = useState<number | null>(preferredDoctorIds[0] ?? doctors[0]?.id ?? null);
+  const [selectedDoctorId, setSelectedDoctorId] = useState<string | null>(preferredDoctorIds[0] ?? doctors[0]?.id ?? null);
   const [weekStart, setWeekStart] = useState(() => atStartOfDay(new Date()));
   const [selectedDate, setSelectedDate] = useState(() => toDateKey(new Date()));
   const [slotDays, setSlotDays] = useState<AppointmentSlotDay[]>([]);
@@ -77,7 +77,7 @@ export function AppointmentBooking({ token, doctors, appointments, preferredDoct
   const [notes, setNotes] = useState("");
   const [isLoadingSlots, setIsLoadingSlots] = useState(false);
   const [isBooking, setIsBooking] = useState(false);
-  const [cancellingId, setCancellingId] = useState<number | null>(null);
+  const [cancellingId, setCancellingId] = useState<string | null>(null);
   const [bookingMessage, setBookingMessage] = useState<string | null>(null);
   const [cancelMessage, setCancelMessage] = useState<string | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -172,6 +172,7 @@ export function AppointmentBooking({ token, doctors, appointments, preferredDoct
     try {
       const result = await bookPatientAppointment(token, {
         doctor_id: selectedDoctorId,
+        slot_id: selectedSlot.slot_id,
         start_time: selectedSlot.start,
         end_time: selectedSlot.end,
         complaint,
@@ -252,7 +253,7 @@ export function AppointmentBooking({ token, doctors, appointments, preferredDoct
               <select
                 id="doctor-select"
                 value={selectedDoctorId ?? ""}
-                onChange={(event) => setSelectedDoctorId(Number(event.target.value))}
+                onChange={(event) => setSelectedDoctorId(event.target.value)}
               >
                 {orderedDoctors.map((doctor) => (
                   <option key={doctor.id} value={doctor.id}>

@@ -251,6 +251,166 @@ a {
   font-size: 14px;
 }
 
+.profile-menu {
+  position: relative;
+}
+
+.profile-trigger {
+  min-height: 42px;
+  border: 0;
+  border-radius: 999px;
+  background: #fff;
+  color: var(--ink);
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 4px 12px 4px 4px;
+  box-shadow: 0 8px 24px rgba(33, 56, 84, 0.08);
+}
+
+.avatar-circle {
+  display: inline-grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.avatar-circle.large {
+  width: 48px;
+  height: 48px;
+  font-size: 15px;
+}
+
+.profile-name {
+  max-width: 180px;
+  color: #24374d;
+  font-weight: 800;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 8px);
+  z-index: 30;
+  min-width: 240px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+}
+
+.profile-card {
+  display: grid;
+  gap: 5px;
+  justify-items: center;
+  border-bottom: 1px solid var(--line);
+  padding: 16px;
+  text-align: center;
+}
+
+.profile-card strong {
+  color: var(--ink);
+}
+
+.profile-card small {
+  color: var(--muted);
+  overflow-wrap: anywhere;
+}
+
+.profile-dropdown button {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-bottom: 1px solid var(--line);
+  background: #fff;
+  color: #24374d;
+  display: flex;
+  align-items: center;
+  gap: 9px;
+  padding: 0 14px;
+  font-weight: 800;
+  text-align: left;
+}
+
+.profile-dropdown button:last-child {
+  border-bottom: 0;
+  color: var(--danger);
+}
+
+.profile-dropdown button:hover {
+  background: #f7fafc;
+}
+
+.profile-panel {
+  display: grid;
+  gap: 14px;
+}
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #f7fafc;
+  padding: 18px;
+}
+
+.profile-hero h3 {
+  margin: 5px 0 2px;
+  font-size: 26px;
+}
+
+.profile-avatar {
+  display: grid;
+  place-items: center;
+  width: 68px;
+  height: 68px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 22px;
+  font-weight: 900;
+}
+
+.profile-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.profile-stat-grid div {
+  min-width: 0;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 14px;
+}
+
+.profile-stat-grid span {
+  display: block;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.profile-stat-grid strong {
+  display: block;
+  margin-top: 6px;
+  color: #24374d;
+  overflow-wrap: anywhere;
+}
+
 .dashboard {
   width: min(1560px, 100%);
   margin: 0 auto;
@@ -1629,7 +1789,8 @@ a {
 
   .status-grid,
   .detail-grid,
-  .overview-grid {
+  .overview-grid,
+  .profile-stat-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
 
@@ -1674,9 +1835,14 @@ a {
     justify-content: space-between;
   }
 
+  .profile-name {
+    display: none;
+  }
+
   .status-grid,
   .detail-grid,
-  .overview-grid,
+    .overview-grid,
+    .profile-stat-grid,
   .clinical-value-row,
   .money-grid,
   .field-list dl {

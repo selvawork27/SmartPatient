@@ -1,15 +1,18 @@
 "use client";
 
 import { FormEvent, useEffect, useState } from "react";
-import { CalendarDays, Smartphone } from "lucide-react";
+import { CalendarDays, KeyRound, Smartphone } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
+import { confirmFirebasePhoneOtp, resetFirebasePhoneOtp, sendFirebasePhoneOtp } from "@/lib/firebase-phone";
 
 export default function LoginPage() {
   const router = useRouter();
-  const { login, token, isReady } = useAuth();
+  const { requestOtp, verifyOtp, token, isReady } = useAuth();
   const [mobileNumber, setMobileNumber] = useState("");
   const [dob, setDob] = useState("");
+  const [otp, setOtp] = useState("");
+  const [otpRequested, setOtpRequested] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -22,7 +25,14 @@ export default function LoginPage() {
     setError("");
     setIsSubmitting(true);
     try {
-      await login(mobileNumber, dob);
+      if (!otpRequested) {
+        await requestOtp(mobileNumber, dob);
+        await sendFirebasePhoneOtp(mobileNumber);
+        setOtpRequested(true);
+        return;
+      }
+      const firebaseIdToken = await confirmFirebasePhoneOtp(otp);
+      await verifyOtp(mobileNumber, dob, firebaseIdToken);
       router.replace("/dashboard");
     } catch (err) {
       setError(err instanceof Error ? err.message : "Unable to login");
@@ -41,9 +51,12 @@ export default function LoginPage() {
       </section>
       <section className="login-panel">
         <form onSubmit={handleSubmit}>
+          <div id="firebase-recaptcha" />
           <span className="eyebrow">SmartPatient Portal</span>
           <h2>View Your Health Records</h2>
-          <p className="subtle">Use your registered patient mobile number and date of birth in ddmmyyyy format.</p>
+          <p className="subtle">
+            Use your registered mobile number and date of birth in ddmmyyyy format. Enter the OTP after it is sent.
+          </p>
 
           <div className="field">
             <label htmlFor="mobile">Mobile number</label>
@@ -75,16 +88,52 @@ export default function LoginPage() {
                 placeholder="ddmmyyyy"
                 pattern="\d{8}"
                 required
+                disabled={otpRequested}
                 style={{ paddingLeft: 42 }}
               />
             </div>
           </div>
 
+          {otpRequested ? (
+          <div className="field">
+            <label htmlFor="otp">OTP</label>
+            <div style={{ position: "relative" }}>
+              <KeyRound size={18} style={{ left: 12, position: "absolute", top: 13, color: "var(--muted)" }} />
+              <input
+                id="otp"
+                inputMode="numeric"
+                autoComplete="one-time-code"
+                value={otp}
+                onChange={(event) => setOtp(event.target.value.replace(/\D/g, "").slice(0, 6))}
+                placeholder="123456"
+                pattern="\d{6}"
+                required
+                style={{ paddingLeft: 42 }}
+              />
+            </div>
+          </div>
+          ) : null}
+
           {error ? <div className="error-box">{error}</div> : null}
 
           <button className="primary-button" type="submit" disabled={isSubmitting}>
-            {isSubmitting ? "Signing in..." : "Login with mobile and DOB"}
+            {isSubmitting ? "Please wait..." : otpRequested ? "Verify OTP" : "Send OTP"}
           </button>
+          {otpRequested ? (
+            <button
+              className="secondary-button"
+              type="button"
+              disabled={isSubmitting}
+              onClick={() => {
+                setOtpRequested(false);
+                setOtp("");
+                setError("");
+                resetFirebasePhoneOtp();
+              }}
+            >
+              Change mobile number
+            </button>
+          ) : null}
         </form>
       </section>
     </main>

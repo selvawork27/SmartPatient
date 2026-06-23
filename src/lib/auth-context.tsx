@@ -1,18 +1,18 @@
 "use client";
 
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from "react";
-import { loginPatient, logoutPatient } from "@/lib/hms-client";
+import { clearStoredSession, getStoredSession, logoutPatient, requestPatientOtp, verifyPatientOtp, writeStoredSession } from "@/lib/hms-client";
 import type { LoginResult, PatientUser } from "@/types/hms";
 
 type AuthState = {
   token: string | null;
   user: PatientUser | null;
   isReady: boolean;
-  login: (mobileNumber: string, dob: string) => Promise<void>;
+  requestOtp: (mobileNumber: string, dob: string) => Promise<void>;
+  verifyOtp: (mobileNumber: string, dob: string, firebaseIdToken: string) => Promise<void>;
   logout: () => Promise<void>;
 };
 
-const storageKey = "smartpatient.session";
 const AuthContext = createContext<AuthState | null>(null);
 
 export function AuthProvider({ children }: { children: React.ReactNode }) {
@@ -21,29 +21,35 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    const saved = window.localStorage.getItem(storageKey);
-    if (saved) {
-      try {
-        const parsed = JSON.parse(saved) as LoginResult;
-        setToken(parsed.token);
-        setUser(parsed.user);
-      } catch {
-        window.localStorage.removeItem(storageKey);
-      }
+    const parsed = getStoredSession();
+    if (parsed) {
+      setToken(parsed.token);
+      setUser(parsed.user);
     }
+    const onSession = (event: Event) => {
+      const detail = (event as CustomEvent<LoginResult | null>).detail;
+      setToken(detail?.token || null);
+      setUser(detail?.user || null);
+    };
+    window.addEventListener("smartpatient.session", onSession);
     setIsReady(true);
+    return () => window.removeEventListener("smartpatient.session", onSession);
   }, []);
 
-  const login = useCallback(async (mobileNumber: string, dob: string) => {
-    const result = await loginPatient(mobileNumber, dob);
-    window.localStorage.setItem(storageKey, JSON.stringify(result));
+  const requestOtp = useCallback(async (mobileNumber: string, dob: string) => {
+    await requestPatientOtp(mobileNumber, dob);
+  }, []);
+
+  const verifyOtp = useCallback(async (mobileNumber: string, dob: string, firebaseIdToken: string) => {
+    const result = await verifyPatientOtp(mobileNumber, dob, firebaseIdToken);
+    writeStoredSession(result);
     setToken(result.token);
     setUser(result.user);
   }, []);
 
   const logout = useCallback(async () => {
     const currentToken = token;
-    window.localStorage.removeItem(storageKey);
+    clearStoredSession();
     setToken(null);
     setUser(null);
     if (currentToken) {
@@ -51,7 +57,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
   }, [token]);
 
-  const value = useMemo(() => ({ token, user, isReady, login, logout }), [token, user, isReady, login, logout]);
+  const value = useMemo(
+    () => ({ token, user, isReady, requestOtp, verifyOtp, logout }),
+    [token, user, isReady, requestOtp, verifyOtp, logout],
+  );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;
 }

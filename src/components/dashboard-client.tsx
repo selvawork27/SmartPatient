@@ -11,6 +11,7 @@ import { ConsultationCard } from "@/components/consultation-card";
 import { LabTestCard } from "@/components/lab-test-card";
 import { MetricCard } from "@/components/metric-card";
 import { MobileModuleNav, ModuleSidebar, type PortalModule } from "@/components/module-sidebar";
+import { ProfilePanel } from "@/components/profile-panel";
 import { Spinner } from "@/components/spinner";
 import { Topbar } from "@/components/topbar";
 
@@ -99,13 +100,12 @@ export function DashboardClient() {
   }, [filtered]);
 
   const preferredDoctorIds = useMemo(() => {
-    const doctorIds = new Set<number>();
+    const doctorIds = new Set<string>();
     const doctorNames = new Set(snapshot.consultations.map((consultation) => consultation.doctorName.toLowerCase()).filter(Boolean));
 
     for (const consultation of snapshot.consultations) {
       const rawDoctorId = consultation.raw.consulting_doctor_id || consultation.raw.doctor_id;
-      const parsed = Number(rawDoctorId);
-      if (Number.isFinite(parsed) && parsed > 0) doctorIds.add(parsed);
+      if (rawDoctorId) doctorIds.add(String(rawDoctorId));
     }
 
     for (const doctor of snapshot.appointmentDoctors) {
@@ -119,6 +119,7 @@ export function DashboardClient() {
 
   const moduleCounts = {
     dashboard: snapshot.consultations.length + snapshot.labTests.length + snapshot.patientBills.length + snapshot.patientAppointments.length,
+    profile: 1,
     consultation: snapshot.consultations.length,
     lab: snapshot.labTests.length,
     billing: snapshot.patientBills.length,
@@ -128,6 +129,8 @@ export function DashboardClient() {
   const moduleTitle =
     activeModule === "dashboard"
       ? "Dashboard"
+      : activeModule === "profile"
+      ? "Profile"
       : activeModule === "consultation"
       ? "Consultation"
       : activeModule === "lab"
@@ -139,6 +142,8 @@ export function DashboardClient() {
   const shownCount =
     activeModule === "dashboard"
       ? moduleCounts.dashboard
+      : activeModule === "profile"
+      ? 1
       : activeModule === "consultation"
       ? filtered.length
       : activeModule === "lab"
@@ -151,7 +156,7 @@ export function DashboardClient() {
 
   return (
     <div className="app-shell">
-      <Topbar onRefresh={refresh} refreshing={isLoading} />
+      <Topbar onProfile={() => setActiveModule("profile")} onRefresh={refresh} refreshing={isLoading} />
       <main className="dashboard">
         {snapshot.warnings.length ? (
           <div className="notice" style={{ marginBottom: 18 }}>
@@ -189,7 +194,7 @@ export function DashboardClient() {
               <span className="pill closed">{shownCount} shown</span>
             </div>
 
-            {activeModule !== "appointment" && activeModule !== "dashboard" ? (
+            {activeModule !== "appointment" && activeModule !== "dashboard" && activeModule !== "profile" ? (
               <div className="module-toolbar">
                 <input
                   value={query}
@@ -265,6 +270,7 @@ export function DashboardClient() {
                   </div>
                 </div>
               ) : null}
+              {!isLoading && activeModule === "profile" ? <ProfilePanel profile={snapshot.profile} user={user} /> : null}
               {!isLoading && activeModule === "consultation" && (
                 consultationVisits.length ? (
                   consultationVisits.map((visit, visitIndex) => (

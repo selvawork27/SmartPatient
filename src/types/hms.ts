@@ -5,7 +5,7 @@ export type HmsEnvelope<T> = {
 };
 
 export type PatientUser = {
-  id?: number;
+  id?: string | number;
   first_name?: string;
   last_name?: string;
   full_name?: string;
@@ -15,12 +15,15 @@ export type PatientUser = {
   owner_id?: number;
   owner_type?: string;
   image_url?: string;
-  patient_id?: number;
+  patient_id?: string | number;
   patient_unique_id?: string;
+  mobile?: string;
+  raw?: Record<string, unknown>;
 };
 
 export type LoginResult = {
   token: string;
+  refresh_token?: string;
   role: string;
   user: PatientUser;
 };
@@ -155,13 +158,14 @@ export type PatientBill = {
 };
 
 export type AppointmentDoctor = {
-  id: number;
+  id: string;
   name?: string;
   department?: string;
   specialization?: string;
 };
 
 export type AppointmentSlot = {
+  slot_id?: string;
   start: string;
   end: string;
   time: string;
@@ -174,16 +178,16 @@ export type AppointmentSlotDay = {
 };
 
 export type AppointmentBookingResult = {
-  appointment_id: number;
-  visit_id: number;
+  appointment_id: string;
+  visit_id?: string | number;
   visit_no: string;
 };
 
 export type PatientAppointment = {
-  id: number;
-  visit_id?: number;
+  id: string;
+  visit_id?: string | number;
   visit_no?: string;
-  doctor_id?: number;
+  doctor_id?: string;
   doctor_name?: string;
   department?: string;
   consultation_type?: string;

@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { CalendarPlus, ClipboardPlus, FlaskConical, LayoutDashboard, Menu, ReceiptText, X } from "lucide-react";
 
-export type PortalModule = "dashboard" | "consultation" | "lab" | "billing" | "appointment";
+export type PortalModule = "dashboard" | "profile" | "consultation" | "lab" | "billing" | "appointment";
 
 const modules = [
   { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
