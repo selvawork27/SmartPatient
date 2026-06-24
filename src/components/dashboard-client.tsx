@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { AlertCircle, CalendarPlus, ChevronDown, ClipboardPlus, FileText, FlaskConical, LayoutDashboard, Pill, ReceiptText } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
@@ -30,7 +30,11 @@ export function DashboardClient() {
   const [query, setQuery] = useState("");
   const [status, setStatus] = useState("all");
 
-  if (isReady && !token) router.replace("/login");
+  useEffect(() => {
+    if (isReady && !token) {
+      router.replace("/login");
+    }
+  }, [isReady, router, token]);
 
   const filtered = useMemo(() => {
     const needle = query.trim().toLowerCase();
