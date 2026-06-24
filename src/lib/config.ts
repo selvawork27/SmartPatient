@@ -3,3 +3,6 @@ export const hmsApiBaseUrl =
 
 export const consultationsPath =
   process.env.NEXT_PUBLIC_SMARTHMS_CONSULTATIONS_PATH?.replace(/^\/|\/$/g, "") || "patient-consultations";
+
+export const appointmentAgentApiBaseUrl =
+  process.env.NEXT_PUBLIC_AGENT_API_URL?.replace(/\/$/, "") || "http://localhost:8001";

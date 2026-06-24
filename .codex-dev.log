@@ -1,0 +1,19 @@
+
+> smartpatient@1.0.0 dev
+> next dev
+
+⚠ Port 3000 is in use by process 9924, using available port 3001 instead.
+▲ Next.js 16.2.9 (Turbopack)
+- Local:         http://localhost:3001
+- Network:       http://172.18.16.1:3001
+- Environments: .env.local
+✓ Ready in 1673ms
+⨯ Another next dev server is already running.
+
+- Local:        http://localhost:3000
+- PID:          9924
+- Dir:          C:\devenv\SmartPatient
+- Log:          .next\dev\logs\next-development.log
+
+Run taskkill /PID 9924 /F to stop it.
+[?25h

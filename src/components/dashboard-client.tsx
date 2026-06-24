@@ -2,15 +2,23 @@
 
 import { useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
-import { AlertCircle, CalendarPlus, ChevronDown, ClipboardPlus, FlaskConical, LayoutDashboard, ReceiptText } from "lucide-react";
+import { AlertCircle, CalendarPlus, ChevronDown, ClipboardPlus, FileText, FlaskConical, LayoutDashboard, Pill, ReceiptText } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
+import {
+  hasRecordAccess,
+  normalizeConsultationMedicinePrescriptions,
+  normalizeDischargeSummaries,
+} from "@/lib/record-normalizers";
 import { usePortalSnapshot } from "@/lib/use-portal-snapshot";
 import { AppointmentBooking } from "@/components/appointment-booking";
 import { BillingCard } from "@/components/billing-card";
 import { ConsultationCard } from "@/components/consultation-card";
-import { LabTestCard } from "@/components/lab-test-card";
+import { DischargeAccessGate, DischargeSummaryCard } from "@/components/discharge-summary-card";
+import { LabTestCard, LabTrendGraphButton } from "@/components/lab-test-card";
 import { MetricCard } from "@/components/metric-card";
 import { MobileModuleNav, ModuleSidebar, type PortalModule } from "@/components/module-sidebar";
+import { PatientChatbot } from "@/components/patient-chatbot";
+import { PrescriptionHistory } from "@/components/prescription-history";
 import { Spinner } from "@/components/spinner";
 import { Topbar } from "@/components/topbar";
 
@@ -62,6 +70,58 @@ export function DashboardClient() {
         .includes(needle),
     );
   }, [query, snapshot.labTests]);
+
+  const dischargeSummaries = useMemo(() => normalizeDischargeSummaries(snapshot.documents), [snapshot.documents]);
+  const prescriptionHistory = useMemo(
+    () => normalizeConsultationMedicinePrescriptions(snapshot.consultations),
+    [snapshot.consultations],
+  );
+  const canAccessDischarge = useMemo(() => hasRecordAccess(snapshot.profile, user), [snapshot.profile, user]);
+
+  const filteredDischargeSummaries = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return dischargeSummaries;
+    return dischargeSummaries.filter((summary) =>
+      [
+        summary.admissionDate,
+        summary.dischargeDate,
+        summary.primaryDiagnosisCode,
+        summary.primaryDiagnosisDescription,
+        summary.procedures.join(" "),
+        summary.medications.join(" "),
+        summary.followUpInstructions,
+        summary.attendingDoctor,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(needle),
+    );
+  }, [dischargeSummaries, query]);
+
+  const filteredPrescriptionHistory = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    if (!needle) return prescriptionHistory;
+    return prescriptionHistory.filter((item) =>
+      [
+        item.medicationName,
+        item.visitNo,
+        item.visitId,
+        item.genericName,
+        item.brandName,
+        item.dose,
+        item.frequency,
+        item.duration,
+        item.prescribedBy,
+        item.date,
+        item.dispensingStatus,
+      ]
+        .filter(Boolean)
+        .join(" ")
+        .toLowerCase()
+        .includes(needle),
+    );
+  }, [prescriptionHistory, query]);
 
   const filteredBills = useMemo(() => {
     const needle = query.trim().toLowerCase();
@@ -117,10 +177,102 @@ export function DashboardClient() {
     return Array.from(doctorIds);
   }, [snapshot.appointmentDoctors, snapshot.consultations]);
 
+  const assistantRecordContext = useMemo(
+    () => ({
+      patient: {
+        name: user?.full_name || [user?.first_name, user?.last_name].filter(Boolean).join(" "),
+        patient_id: user?.patient_id,
+        patient_unique_id: user?.patient_unique_id,
+      },
+      bills: snapshot.patientBills.map((bill) => ({
+        bill_no: bill.bill_no,
+        visit_no: bill.visit_no,
+        open_date: bill.open_date,
+        bill_status: bill.bill_status,
+        payment_status: bill.payment_status,
+        doctor_name: bill.doctor_name,
+        totals: bill.totals,
+        items: bill.items.map((item) => ({
+          description: item.description || item.medicine || item.diagnostic_test || item.service,
+          quantity: item.quantity,
+          amount: item.amount,
+        })),
+      })),
+      appointments: snapshot.patientAppointments.map((appointment) => ({
+        visit_no: appointment.visit_no,
+        doctor_name: appointment.doctor_name,
+        department: appointment.department,
+        date: appointment.date,
+        display_time: appointment.display_time,
+        start_time: appointment.start_time,
+        end_time: appointment.end_time,
+        status: appointment.status,
+      })),
+      consultations: snapshot.consultations.map((consultation) => ({
+        visit_no: consultation.visitNo,
+        title: consultation.title,
+        doctor_name: consultation.doctorName,
+        department: consultation.department,
+        date: consultation.date,
+        status: consultation.status,
+        complaints: consultation.complaints,
+        diagnosis: consultation.diagnosis,
+        instructions: consultation.instructions,
+      })),
+      prescriptions: prescriptionHistory.map((prescription) => ({
+        visit_no: prescription.visitNo,
+        medication_name: prescription.medicationName,
+        dose: prescription.dose,
+        frequency: prescription.frequency,
+        duration: prescription.duration,
+        prescribed_by: prescription.prescribedBy,
+        date: prescription.date,
+        status: prescription.dispensingStatus,
+      })),
+      lab_tests: snapshot.labTests.map((test) => ({
+        visit_no: test.visit_no,
+        test_name: test.test_name || test.investigation_name,
+        prescription_date: test.prescription_date,
+        status: test.conduction_status,
+        parameters: test.parameters.map((parameter) => ({
+          name: parameter.name,
+          value: parameter.value,
+          units: parameter.units,
+          severity: parameter.severity,
+        })),
+      })),
+      discharge_summaries: dischargeSummaries.map((summary) => ({
+        admission_date: summary.admissionDate,
+        discharge_date: summary.dischargeDate,
+        primary_diagnosis_code: summary.primaryDiagnosisCode,
+        primary_diagnosis: summary.primaryDiagnosisDescription,
+        attending_doctor: summary.attendingDoctor,
+        follow_up_instructions: summary.followUpInstructions,
+      })),
+    }),
+    [
+      dischargeSummaries,
+      prescriptionHistory,
+      snapshot.consultations,
+      snapshot.labTests,
+      snapshot.patientAppointments,
+      snapshot.patientBills,
+      user,
+    ],
+  );
+
   const moduleCounts = {
-    dashboard: snapshot.consultations.length + snapshot.labTests.length + snapshot.patientBills.length + snapshot.patientAppointments.length,
+    dashboard:
+      snapshot.consultations.length +
+      snapshot.labTests.length +
+      dischargeSummaries.length +
+      prescriptionHistory.length +
+      snapshot.patientBills.length +
+      snapshot.patientAppointments.length,
     consultation: snapshot.consultations.length,
     lab: snapshot.labTests.length,
+    discharge: dischargeSummaries.length,
+    prescription: prescriptionHistory.length,
     billing: snapshot.patientBills.length,
     appointment: snapshot.patientAppointments.length,
   };
@@ -132,9 +284,13 @@ export function DashboardClient() {
       ? "Consultation"
       : activeModule === "lab"
         ? "Lab Test"
-        : activeModule === "billing"
-          ? "Billing"
-          : "Appointment";
+        : activeModule === "discharge"
+          ? "Discharge Summaries"
+          : activeModule === "prescription"
+            ? "Prescription History"
+            : activeModule === "billing"
+              ? "Billing"
+              : "Appointment";
 
   const shownCount =
     activeModule === "dashboard"
@@ -143,9 +299,15 @@ export function DashboardClient() {
       ? filtered.length
       : activeModule === "lab"
         ? filteredLabs.length
-        : activeModule === "billing"
-          ? filteredBills.length
-          : snapshot.patientAppointments.length;
+        : activeModule === "discharge"
+          ? canAccessDischarge
+            ? filteredDischargeSummaries.length
+            : 0
+          : activeModule === "prescription"
+            ? filteredPrescriptionHistory.length
+            : activeModule === "billing"
+              ? filteredBills.length
+              : snapshot.patientAppointments.length;
 
   if (!isReady || !token) return <Spinner label="Preparing patient portal..." />;
 
@@ -164,22 +326,22 @@ export function DashboardClient() {
 
         <MobileModuleNav
           active={activeModule}
-          counts={moduleCounts}
           onChange={setActiveModule}
         />
 
         <div className="portal-layout">
           <ModuleSidebar
             active={activeModule}
-            counts={moduleCounts}
             onChange={setActiveModule}
           />
 
           <section className="section module-content">
             <div className="section-header">
               <div>
-                <span className="eyebrow">Registered patient portal</span>
-                <h2>{moduleTitle}</h2>
+                <div className="module-title-row">
+                  <h2>{moduleTitle}</h2>
+                  {activeModule === "lab" ? <LabTrendGraphButton labTests={snapshot.labTests} /> : null}
+                </div>
                 <p className="subtle">
                   {activeModule === "dashboard"
                     ? `Welcome ${user?.full_name || [user?.first_name, user?.last_name].filter(Boolean).join(" ") || "Patient"}`
@@ -199,7 +361,11 @@ export function DashboardClient() {
                       ? "Search doctor, diagnosis, medicine, notes..."
                       : activeModule === "lab"
                         ? "Search test, FBC parameter, value, status..."
-                        : "Search bill, item, status, doctor..."
+                        : activeModule === "discharge"
+                          ? "Search diagnosis, procedure, medicine, doctor..."
+                          : activeModule === "prescription"
+                            ? "Search medicine, dose, doctor, status..."
+                            : "Search bill, item, status, doctor..."
                   }
                 />
                 {activeModule === "consultation" ? (
@@ -221,6 +387,8 @@ export function DashboardClient() {
                 <div className="overview-grid">
                   <MetricCard label="Consultation records" value={snapshot.consultations.length} icon={ClipboardPlus} />
                   <MetricCard label="Lab tests" value={snapshot.labTests.length} icon={FlaskConical} />
+                  <MetricCard label="Discharge summaries" value={dischargeSummaries.length} icon={FileText} />
+                  <MetricCard label="Prescriptions" value={prescriptionHistory.length} icon={Pill} />
                   <MetricCard label="Bills" value={snapshot.patientBills.length} icon={ReceiptText} />
                   <MetricCard label="Appointments" value={snapshot.patientAppointments.length} icon={CalendarPlus} />
 
@@ -294,11 +462,25 @@ export function DashboardClient() {
               )}
               {!isLoading && activeModule === "lab" && (
                 filteredLabs.length ? (
-                  filteredLabs.map((test) => <LabTestCard test={test} key={test.id} />)
+                  filteredLabs.map((test) => <LabTestCard allTests={snapshot.labTests} test={test} key={test.id} />)
                 ) : (
                   <div className="empty-state">No lab test records matched the current filters.</div>
                 )
               )}
+              {!isLoading && activeModule === "discharge" && (
+                canAccessDischarge ? (
+                  filteredDischargeSummaries.length ? (
+                    filteredDischargeSummaries.map((summary) => <DischargeSummaryCard key={summary.id} summary={summary} />)
+                  ) : (
+                    <div className="empty-state">No discharge summaries matched the current filters.</div>
+                  )
+                ) : (
+                  <DischargeAccessGate />
+                )
+              )}
+              {!isLoading && activeModule === "prescription" ? (
+                <PrescriptionHistory prescriptions={filteredPrescriptionHistory} token={token} />
+              ) : null}
               {!isLoading && activeModule === "billing" && (
                 filteredBills.length ? (
                   filteredBills.map((bill) => <BillingCard bill={bill} key={bill.id} />)
@@ -319,6 +501,18 @@ export function DashboardClient() {
           </section>
         </div>
       </main>
+      <PatientChatbot
+        doctors={snapshot.appointmentDoctors}
+        onBooked={refresh}
+        patientName={
+          user?.full_name ||
+          [user?.first_name, user?.last_name].filter(Boolean).join(" ") ||
+          "Patient"
+        }
+        preferredDoctorIds={preferredDoctorIds}
+        recordContext={assistantRecordContext}
+        token={token}
+      />
     </div>
   );
 }

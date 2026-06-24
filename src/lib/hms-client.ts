@@ -149,3 +149,11 @@ export async function cancelPatientAppointment(token: string, appointmentId: num
     token,
   });
 }
+
+export async function requestRepeatPrescription(token: string, prescriptionIds: string[]) {
+  return request<{ request_id?: number | string; status?: string; message?: string }>("patient-repeat-prescription-request", {
+    method: "POST",
+    token,
+    body: { prescription_ids: prescriptionIds },
+  });
+}

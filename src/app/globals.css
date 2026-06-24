@@ -520,6 +520,17 @@ a {
   margin: 0;
 }
 
+.module-title-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 4px 0;
+}
+
+.module-title-row h2 {
+  margin: 0;
+}
+
 .section-body {
   display: grid;
   gap: 12px;
@@ -682,6 +693,527 @@ a {
   border-radius: 8px;
   background: var(--panel);
   box-shadow: 0 8px 24px rgba(33, 56, 84, 0.05);
+}
+
+.billing-accordion {
+  padding: 0;
+  overflow: hidden;
+}
+
+.billing-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  align-items: center;
+  gap: 14px;
+  cursor: pointer;
+  list-style: none;
+  padding: 16px 18px;
+}
+
+.billing-summary::-webkit-details-marker {
+  display: none;
+}
+
+.billing-accordion[open] > .billing-summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.billing-accordion[open] > .billing-summary .summary-chevron {
+  transform: rotate(180deg);
+}
+
+.billing-summary-counts {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.billing-accordion-body {
+  padding: 0 18px 18px;
+}
+
+.patient-chatbot {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 35;
+}
+
+.chatbot-launcher {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  min-height: 48px;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+  box-shadow: 0 12px 30px rgba(6, 106, 117, 0.28);
+  padding: 0 16px;
+  font-weight: 800;
+}
+
+.chatbot-launcher:hover {
+  background: var(--accent-strong);
+}
+
+.chatbot-panel {
+  width: min(390px, calc(100vw - 32px));
+  height: min(620px, calc(100vh - 110px));
+  display: grid;
+  grid-template-rows: auto auto minmax(0, 1fr) auto auto auto;
+  overflow: hidden;
+  border: 1px solid #cbdbe5;
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: 0 22px 60px rgba(17, 42, 64, 0.24);
+}
+
+.chatbot-panel.minimized {
+  height: auto;
+  grid-template-rows: auto;
+}
+
+.chatbot-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  background: #102f42;
+  color: #fff;
+  padding: 12px 14px;
+}
+
+.chatbot-identity {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.chatbot-avatar {
+  width: 36px;
+  height: 36px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #dff4f3;
+  color: var(--accent-strong);
+}
+
+.chatbot-identity strong,
+.chatbot-identity span {
+  display: block;
+}
+
+.chatbot-identity strong {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  font-size: 14px;
+}
+
+.chatbot-identity > div > span {
+  margin-top: 3px;
+  color: #c5d8e1;
+  font-size: 11px;
+}
+
+.chatbot-identity i {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #48c58b;
+  margin-right: 5px;
+}
+
+.chatbot-header-actions {
+  display: flex;
+  gap: 4px;
+}
+
+.chatbot-header-actions button {
+  width: 32px;
+  height: 32px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #dceaf0;
+}
+
+.chatbot-header-actions button:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.chatbot-safety-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  border-bottom: 1px solid var(--line);
+  background: #f6fafb;
+  color: #52667a;
+  padding: 9px 12px;
+  font-size: 11px;
+  line-height: 1.4;
+}
+
+.chatbot-safety-note svg {
+  flex: 0 0 auto;
+  color: var(--accent-strong);
+}
+
+.chatbot-messages {
+  min-height: 0;
+  overflow-y: auto;
+  background: #f7f9fc;
+  padding: 14px 12px;
+}
+
+.chatbot-day-label {
+  margin-bottom: 12px;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 800;
+  text-align: center;
+  text-transform: uppercase;
+}
+
+.chatbot-message-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 7px;
+  margin-bottom: 12px;
+}
+
+.chatbot-message-row.patient {
+  justify-content: flex-end;
+}
+
+.chatbot-message-icon {
+  width: 26px;
+  height: 26px;
+  flex: 0 0 auto;
+  display: grid;
+  place-items: center;
+  border: 1px solid #cce5e7;
+  border-radius: 50%;
+  background: #fff;
+  color: var(--accent-strong);
+}
+
+.chatbot-message {
+  max-width: 80%;
+  border: 1px solid var(--line);
+  border-radius: 8px 8px 8px 2px;
+  background: #fff;
+  color: #263a4d;
+  padding: 9px 11px;
+  font-size: 13px;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+}
+
+.chatbot-message-row.patient .chatbot-message {
+  border-color: var(--accent);
+  border-radius: 8px 8px 2px 8px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.chatbot-choice-list {
+  display: grid;
+  gap: 7px;
+  margin: 4px 0 14px 33px;
+}
+
+.chatbot-choice-list > button {
+  width: 100%;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid #cbdce5;
+  border-radius: 8px;
+  background: #fff;
+  color: var(--ink);
+  padding: 9px 10px;
+  text-align: left;
+}
+
+.chatbot-choice-list > button:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.chatbot-choice-list strong,
+.chatbot-choice-list small {
+  display: block;
+}
+
+.chatbot-choice-list strong {
+  font-size: 12px;
+}
+
+.chatbot-choice-list small {
+  margin-top: 3px;
+  color: var(--muted);
+  font-size: 10px;
+}
+
+.chatbot-choice-list em {
+  border-radius: 999px;
+  background: #eaf8f1;
+  color: var(--success);
+  padding: 4px 7px;
+  font-size: 9px;
+  font-style: normal;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.chatbot-slot-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 4px 0 14px 33px;
+}
+
+.chatbot-slot-list button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 1px solid #c8dce5;
+  border-radius: 8px;
+  background: #fff;
+  color: #294a5c;
+  padding: 8px 9px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.chatbot-slot-list button:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.chatbot-thinking {
+  width: fit-content;
+  display: flex;
+  gap: 4px;
+  margin: 2px 0 12px 33px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  padding: 9px 11px;
+}
+
+.chatbot-thinking span {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--muted);
+  animation: chatbot-pulse 1s infinite ease-in-out;
+}
+
+.chatbot-thinking span:nth-child(2) {
+  animation-delay: 0.14s;
+}
+
+.chatbot-thinking span:nth-child(3) {
+  animation-delay: 0.28s;
+}
+
+@keyframes chatbot-pulse {
+  0%,
+  60%,
+  100% {
+    opacity: 0.35;
+    transform: translateY(0);
+  }
+  30% {
+    opacity: 1;
+    transform: translateY(-2px);
+  }
+}
+
+.chatbot-booked {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  margin: 4px 0 12px 33px;
+  color: var(--success);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.chatbot-suggestions {
+  display: flex;
+  gap: 7px;
+  overflow-x: auto;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  padding: 9px 10px;
+}
+
+.chatbot-suggestions button {
+  flex: 0 0 auto;
+  border: 1px solid #c9dce4;
+  border-radius: 8px;
+  background: #fff;
+  color: #315063;
+  padding: 7px 9px;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.chatbot-suggestions button:hover {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+
+.chatbot-composer {
+  display: grid;
+  grid-template-columns: 38px minmax(0, 1fr) 38px;
+  align-items: end;
+  gap: 8px;
+  border-top: 1px solid var(--line);
+  background: #fff;
+  padding: 10px;
+}
+
+.chatbot-composer .chatbot-mic {
+  background: #eef4f7;
+  color: #315063;
+}
+
+.chatbot-composer .chatbot-mic.recording {
+  background: #fff1ef;
+  color: var(--danger);
+}
+
+.chatbot-composer textarea {
+  width: 100%;
+  min-height: 40px;
+  max-height: 96px;
+  resize: none;
+  border: 1px solid #cdd9e3;
+  border-radius: 8px;
+  outline: none;
+  padding: 10px 11px;
+  color: var(--ink);
+  line-height: 1.35;
+}
+
+.chatbot-composer textarea:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px rgba(8, 127, 140, 0.12);
+}
+
+.chatbot-composer button {
+  width: 38px;
+  height: 40px;
+  display: grid;
+  place-items: center;
+  border: 0;
+  border-radius: 8px;
+  background: var(--accent);
+  color: #fff;
+}
+
+.chatbot-composer button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.chatbot-disclaimer {
+  margin: 0;
+  background: #fff;
+  color: var(--muted);
+  padding: 0 10px 9px;
+  font-size: 10px;
+  text-align: center;
+}
+
+.lab-accordion {
+  padding: 0;
+  overflow: hidden;
+}
+
+.lab-summary {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto auto;
+  gap: 14px;
+  align-items: center;
+  cursor: pointer;
+  list-style: none;
+  padding: 16px 18px;
+}
+
+.lab-summary::-webkit-details-marker {
+  display: none;
+}
+
+.lab-accordion[open] > .lab-summary {
+  border-bottom: 1px solid var(--line);
+}
+
+.lab-accordion[open] > .lab-summary .summary-chevron {
+  transform: rotate(180deg);
+}
+
+.lab-title-block {
+  min-width: 0;
+}
+
+.lab-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.lab-title-row h3 {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.graph-icon-button {
+  flex: 0 0 auto;
+  width: 34px;
+  height: 34px;
+  min-height: 34px;
+  color: var(--accent-strong);
+}
+
+.graph-icon-button:disabled {
+  cursor: not-allowed;
+  opacity: 0.42;
+}
+
+.lab-global-graph {
+  background: var(--accent-soft);
+}
+
+.lab-accordion-body {
+  padding: 0 18px 18px;
+}
+
+.record-actions {
+  display: inline-flex;
+  align-items: center;
+  justify-content: end;
+  gap: 10px;
+}
+
+.compact-button {
+  min-height: 34px;
+  padding: 0 11px;
+  white-space: nowrap;
 }
 
 .meta {
@@ -850,6 +1382,105 @@ a {
   font-size: 20px;
 }
 
+.record-two-column {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.record-section,
+.access-gate {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.access-gate {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 18px;
+}
+
+.access-gate svg {
+  flex: 0 0 auto;
+  color: var(--warn);
+}
+
+.access-gate strong {
+  display: block;
+  margin-bottom: 4px;
+}
+
+.access-gate p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.prescription-history {
+  display: grid;
+  gap: 14px;
+}
+
+.prescription-visit-list {
+  display: grid;
+  gap: 12px;
+  padding: 12px;
+}
+
+.prescription-visit-group {
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  overflow: hidden;
+}
+
+.prescription-visit-header {
+  border-bottom: 1px solid var(--line);
+}
+
+.prescription-visit-group[open] > .prescription-visit-header .summary-chevron {
+  transform: rotate(180deg);
+}
+
+.prescription-table-toolbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  padding: 10px 12px;
+}
+
+.checkbox-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #33445a;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.prescription-table {
+  margin-top: 0;
+}
+
+.prescription-table table {
+  min-width: 1040px;
+}
+
+.active-medicine-row {
+  background: #f6fffa;
+}
+
+.repeat-button {
+  width: fit-content;
+  margin-top: 2px;
+}
+
 .inline-link {
   display: inline-flex;
   align-items: center;
@@ -868,7 +1499,7 @@ a {
 .responsive-table table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 720px;
+  min-width: 820px;
 }
 
 .responsive-table th,
@@ -885,6 +1516,92 @@ a {
   color: #34475d;
   font-size: 12px;
   text-transform: uppercase;
+}
+
+.mini-trend-button {
+  display: block;
+  width: 112px;
+  height: 42px;
+  border: 1px solid #c7e8ec;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent-strong);
+  padding: 4px 7px;
+}
+
+.mini-trend-button svg {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.mini-trend-button polyline {
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 3;
+}
+
+.trend-empty {
+  color: var(--muted);
+}
+
+.graph-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 40;
+  display: grid;
+  place-items: center;
+  background: rgba(16, 36, 54, 0.52);
+  padding: 18px;
+}
+
+.graph-modal-card {
+  width: min(760px, 100%);
+  max-height: min(820px, calc(100vh - 36px));
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.graph-modal-card-wide {
+  width: min(1120px, 100%);
+}
+
+.graph-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--line);
+  background: #f7fafc;
+  padding: 12px 14px;
+}
+
+.graph-modal-head strong,
+.graph-modal-head span {
+  display: block;
+}
+
+.graph-modal-head span {
+  color: var(--muted);
+  font-size: 13px;
+  margin-top: 3px;
+}
+
+.graph-modal-card > .recharts-responsive-container {
+  margin: 14px;
+}
+
+.graph-iframe {
+  display: block;
+  width: 100%;
+  height: min(720px, calc(100vh - 116px));
+  border: 0;
+  background: #f6f8fb;
 }
 
 .list-row {
@@ -1614,7 +2331,8 @@ a {
   .dashboard-head,
   .clinical-card-list,
   .appointment-grid,
-  .slot-groups {
+  .slot-groups,
+  .record-two-column {
     grid-template-columns: 1fr;
   }
 
@@ -1677,6 +2395,7 @@ a {
   .status-grid,
   .detail-grid,
   .overview-grid,
+  .discharge-grid,
   .clinical-value-row,
   .money-grid,
   .field-list dl {
@@ -1688,12 +2407,49 @@ a {
   }
 
   .consultation-summary,
+  .billing-summary,
   .record-card header,
   .visit-group-header,
   .appointment-hero,
   .appointment-topline,
   .appointment-card {
     display: grid;
+  }
+
+  .record-card header {
+    grid-template-columns: 1fr;
+  }
+
+  .billing-summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .billing-summary .pill {
+    grid-column: 1;
+    width: fit-content;
+  }
+
+  .billing-summary .summary-chevron {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .lab-summary {
+    grid-template-columns: minmax(0, 1fr) auto;
+  }
+
+  .lab-summary .summary-chevron {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .record-actions {
+    grid-column: 1 / -1;
+    justify-content: start;
+  }
+
+  .module-title-row {
+    flex-wrap: wrap;
   }
 
   .appointment-toggle {
@@ -1779,5 +2535,54 @@ a {
     font-size: 12px;
     font-weight: 800;
     text-transform: uppercase;
+  }
+
+  .prescription-table-toolbar {
+    display: grid;
+    align-items: stretch;
+  }
+
+  .prescription-table .appointment-status {
+    width: fit-content;
+  }
+
+  .mini-trend-button {
+    width: min(180px, 100%);
+  }
+
+  .graph-modal {
+    align-items: stretch;
+    padding: 10px;
+  }
+
+  .graph-modal-card {
+    max-height: calc(100vh - 20px);
+  }
+
+  .graph-iframe {
+    height: calc(100vh - 88px);
+  }
+
+  .patient-chatbot {
+    right: 12px;
+    bottom: 12px;
+  }
+
+  .chatbot-launcher span {
+    display: none;
+  }
+
+  .chatbot-launcher {
+    width: 50px;
+    height: 50px;
+    min-height: 50px;
+    border-radius: 50%;
+    padding: 0;
+    justify-content: center;
+  }
+
+  .chatbot-panel {
+    width: calc(100vw - 24px);
+    height: calc(100dvh - 100px);
   }
 }

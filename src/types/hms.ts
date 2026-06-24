@@ -32,6 +32,38 @@ export type HmsDiagnosis = Record<string, unknown>;
 export type HmsDocument = Record<string, unknown>;
 export type HmsProfile = Record<string, unknown>;
 
+export type DischargeSummary = {
+  id: string;
+  admissionDate?: string;
+  dischargeDate?: string;
+  primaryDiagnosisCode?: string;
+  primaryDiagnosisDescription?: string;
+  procedures: string[];
+  medications: string[];
+  followUpInstructions?: string;
+  attendingDoctor?: string;
+  pdfUrl?: string;
+  signed?: boolean;
+  raw: Record<string, unknown>;
+};
+
+export type PrescriptionHistoryItem = {
+  id: string;
+  visitId?: string;
+  visitNo?: string;
+  medicationName: string;
+  genericName?: string;
+  brandName?: string;
+  dose?: string;
+  frequency?: string;
+  duration?: string;
+  prescribedBy?: string;
+  date?: string;
+  dispensingStatus: "Dispensed" | "Pending" | "Expired";
+  isActive: boolean;
+  raw: Record<string, unknown>;
+};
+
 export type LabParameter = {
   id?: number;
   name?: string;

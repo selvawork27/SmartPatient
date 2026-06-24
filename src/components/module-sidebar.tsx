@@ -1,14 +1,16 @@
 "use client";
 
 import { useState } from "react";
-import { CalendarPlus, ClipboardPlus, FlaskConical, LayoutDashboard, Menu, ReceiptText, X } from "lucide-react";
+import { CalendarPlus, ClipboardPlus, FileText, FlaskConical, LayoutDashboard, Menu, Pill, ReceiptText, X } from "lucide-react";
 
-export type PortalModule = "dashboard" | "consultation" | "lab" | "billing" | "appointment";
+export type PortalModule = "dashboard" | "consultation" | "lab" | "discharge" | "prescription" | "billing" | "appointment";
 
 const modules = [
   { id: "dashboard" as const, label: "Dashboard", icon: LayoutDashboard },
   { id: "consultation" as const, label: "Consultation", icon: ClipboardPlus },
   { id: "lab" as const, label: "Lab Test", icon: FlaskConical },
+  { id: "discharge" as const, label: "Discharge", icon: FileText },
+  { id: "prescription" as const, label: "Prescription", icon: Pill },
   { id: "billing" as const, label: "Billing", icon: ReceiptText },
   { id: "appointment" as const, label: "Appointment", icon: CalendarPlus },
 ];
@@ -16,27 +18,24 @@ const modules = [
 type ModuleNavProps = {
   active: PortalModule;
   onChange: (module: PortalModule) => void;
-  counts: Record<PortalModule, number>;
 };
 
 export function ModuleSidebar({
   active,
   onChange,
-  counts,
 }: ModuleNavProps) {
   return (
     <aside className="module-sidebar">
-      <div className="sidebar-title">
+      {/* <div className="sidebar-title">
         <span>Patient Portal</span>
         <strong>SmartHMS</strong>
-      </div>
+      </div> */}
       {modules.map((module) => {
         const Icon = module.icon;
         return (
           <button className={active === module.id ? "active" : ""} key={module.id} onClick={() => onChange(module.id)}>
             <Icon size={19} />
             <span>{module.label}</span>
-            <strong>{counts[module.id]}</strong>
           </button>
         );
       })}
@@ -44,7 +43,7 @@ export function ModuleSidebar({
   );
 }
 
-export function MobileModuleNav({ active, onChange, counts }: ModuleNavProps) {
+export function MobileModuleNav({ active, onChange }: ModuleNavProps) {
   const [isOpen, setIsOpen] = useState(false);
   const activeModule = modules.find((module) => module.id === active);
   const ActiveIcon = activeModule?.icon || LayoutDashboard;
@@ -75,7 +74,6 @@ export function MobileModuleNav({ active, onChange, counts }: ModuleNavProps) {
               >
                 <Icon size={18} />
                 <span>{module.label}</span>
-                <strong>{counts[module.id]}</strong>
               </button>
             );
           })}
